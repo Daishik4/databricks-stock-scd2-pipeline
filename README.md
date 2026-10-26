@@ -34,7 +34,7 @@ Schedule: Databricks Job (daily)
 ## Data source
 
 - **Alpha Vantage** free API: daily prices and company overview (sector, industry, market capitalisation).
-- **Free-tier limits:** about 25 requests per day and 5 per minute → the pipeline tracks **[FILL: number] tickers**: **[FILL: list of tickers]**.
+- **Free-tier limits:** about 25 requests per day and 5 per minute → the pipeline tracks .
 - **Honest note:** real company attributes change rarely. To prove the SCD Type 2 logic, the tests also use a small **test dataset with planned changes** (for example, a company changing sector on day 3). Real-data changes are reported separately in Results.
 
 ## How it works
