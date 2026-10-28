@@ -28,8 +28,8 @@ So this project is my attempt to solve both of those properly.
 |---|---|---|
 | Extract | Python script that calls the Alpha Vantage API for 8 tickers. It retries network errors, catches API errors that come back inside a normal "200 OK" reply, waits between calls to stay under the rate limit, turns the date-keyed response into one row per day, and saves one JSON Lines file per ticker per day. Re-running a day overwrites that day's file, so there are no duplicates. | Done |
 | Change of plan | I originally planned to get sector and industry from the API's company-overview endpoint, but it turned out to be premium on the free tier. Instead of dropping SCD Type 2, I changed the design: name, sector and industry come from a reference file I maintain (`companies.csv`), and I calculate a real, changing attribute from the prices, `trend_status` (whether the close is above or below its 20-day moving average). | Done |
-| Bronze layer | Auto Loader picks up only new files and adds `load_ts` and `source_file` to every row. | In progress |
-| Silver layer | Convert types, remove duplicates per (ticker, trade_date), and count values that fail to convert. | Planned |
+| Bronze layer | Auto Loader picks up only new files and adds `load_ts` and `source_file` to every row. | Done |
+| Silver layer | Convert types, remove duplicates per (ticker, trade_date), and count values that fail to convert. | In progress |
 | Fact table | `fact_daily_price`: only loads dates after the last loaded date, using MERGE on (ticker, trade_date). | Planned |
 | Dimension table | `dim_company` with SCD Type 2. A MERGE closes current rows whose values changed, then an anti-join inserts the new current rows. I've already tested this logic on sample data. | Planned |
 | Tests | Re-run safety, a planned change in `companies.csv`, and row counts that match between layers. | Planned |
