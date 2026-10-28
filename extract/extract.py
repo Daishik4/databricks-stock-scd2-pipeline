@@ -26,17 +26,15 @@ def flatten_daily(ticker, data):
         
         flatten.append({
             'ticker': ticker,
-            'Trade_date': day,
+            'trade_date': day,
             'open': value['1. open'],
             'high': value['2. high'],
             'low': value['3. low'],
             'close': value['4. close'],
-            'volume': value['5. volume'],
-            
+            'volume': value['5. volume'], 
         })
     
     return flatten
-
 
 def save_jsonl(rows, path):               
     with open(path, "w") as f:
@@ -74,6 +72,7 @@ def main():
             data = call_api(params, ticker)
             rows = flatten_daily(ticker,data)
             save_jsonl(rows, f"{LANDING_DIR}/prices_{ticker}_{today}.jsonl")
+            time.sleep(SLEEP_SECONDS)
             succeeded.append(ticker)                                
         except Exception as e:                                      
             print(f"{ticker}: FAILED: {e}")
