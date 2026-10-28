@@ -1,9 +1,9 @@
-﻿"ticker	name	sector	industry",
-"IBM	INTERNATIONAL BUSINESS MACHINES CORPORATION	Technology	Information Technology Services",
-"TSLA	""TESLA"," INC.""	Consumer Cyclical	Auto Manufacturers"
-"NVDA	NVIDIA CORPORATION	Technology	Semiconductors",
-"AAPL	APPLE INC.	Technology	Consumer Electronics",
-"AMD	""ADVANCED MICRO DEVICES"," INC.""	Technology	Semiconductors"
-"GOOGL	ALPHABET INC.	Communication Services	Internet Content & Information",
-"MSFT	MICROSOFT CORPORATION	Technology	Software - Infrastructure",
-"AMZN	""AMAZON.COM"," INC.""	Consumer Cyclical	Internet Retail"
+ticker,name,sector,industry
+IBM,INTERNATIONAL BUSINESS MACHINES CORPORATION,Technology,Information Technology Services
+TSLA,"TESLA, INC.",Consumer Cyclical,Auto Manufacturers
+NVDA,NVIDIA CORPORATION,Technology,Semiconductors
+AAPL,APPLE INC.,Technology,Consumer Electronics
+AMD,"ADVANCED MICRO DEVICES, INC.",Technology,Semiconductors
+GOOGL,ALPHABET INC.,Communication Services,Internet Content & Information
+MSFT,MICROSOFT CORPORATION,Technology,Software - Infrastructure
+AMZN,"AMAZON.COM, INC.",Consumer Cyclical,Internet Retail
