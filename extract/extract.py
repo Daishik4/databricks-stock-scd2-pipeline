@@ -77,7 +77,8 @@ def main():
         except Exception as e:                                      
             print(f"{ticker}: FAILED: {e}")
             failed.append(ticker)
-
+    print("Success",succeeded)
+    print("Failed",failed)
 
 if __name__ == "__main__":
     main()
