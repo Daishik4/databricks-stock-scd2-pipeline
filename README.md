@@ -1,6 +1,6 @@
 # Stock Market Data Pipeline on Databricks (Incremental Loads + SCD Type 2)
 
-A daily pipeline that pulls stock prices from a public API, loads only the new trading days, and keeps a full history of how each company's attributes change over time. It runs on its own every morning.
+A daily pipeline that pulls stock prices from a public API, loads only the new trading days, and keeps a full history of how each company's attributes change over time. It runs on its own every morning and feeds a Power BI dashboard.
 
 **Status:** complete, tested and scheduled (Nov 2026). Every number in this README comes from a real run.
 
@@ -36,6 +36,22 @@ This project is my attempt to solve both of those properly.
 | Bad input is blocked | Tickers that aren't in my company list go to a rejects table instead of the clean data (tested with a fake ticker) |
 
 ![Databricks Job run](docs/job_run.png)
+
+## Dashboard
+
+A one-page Power BI report built on the gold layer. Pick a ticker and it shows the latest close, the change from the previous trading day, the current trend, the price against its 20-day average, and the full SCD Type 2 history of the trend.
+
+![Power BI dashboard](docs/dashboard.png)
+
+In the screenshot, AAPL's trend history shows four records that follow each other with no gaps or overlaps: above its average from 28 Oct, below on 3 Nov, above again on 4–5 Nov, and below from 6 Nov.
+
+How I built it:
+
+- **Import mode, not DirectQuery.** The data is small, so Power BI keeps its own copy and the report works even while the Databricks SQL warehouse is switched off. The trade-off is that it's a snapshot: it only shows new days after a refresh.
+- **A current-company table to avoid double counting.** `dim_company` has several records per ticker, so relating it directly to the prices would be a many-to-many relationship. I filtered it to `is_current = true` in Power Query (one row per ticker) and used that for a clean one-to-many relationship. The full history table is only used for the history visual.
+- **Prices are never summed.** I turned off default summing on price columns, because adding up a stock's close prices over 100 days gives a meaningless number.
+- **"Previous day" means the previous trading day.** The change measure in DAX looks for the latest date before the last one, instead of subtracting one calendar day, so it still works after weekends and holidays.
+- **The 20-day average comes from the data layer** (the `v_price_trend` view), not from DAX, so the dashboard and any other tool show the same number.
 
 ## How it works
 
@@ -123,6 +139,7 @@ Tickers: AAPL, AMD, AMZN, GOOGL, IBM, MSFT, NVDA, TSLA
 3. Import the notebooks from `notebooks/` and create a Job with 5 notebook tasks in this order: `00_extract` → `01_bronze` → `02_silver` → `03_gold_fact` → `04_gold_dim`.
 4. Add a schedule trigger (I use `0 0 7 ? * TUE-SAT`, time zone Asia/Kolkata).
 5. Create the reporting view with `sql/v_price_trend.sql`.
+6. Open `dashboard/stock_dashboard.pbix` in Power BI Desktop and point the Databricks connection at your own SQL warehouse (server hostname and HTTP path from the warehouse's Connection details tab).
 
 Each notebook prints its own checks at the end. `extract/extract.py` is the original laptop version of the extract (it reads the key from a local `.env` file, which is in `.gitignore`).
 
@@ -132,10 +149,11 @@ Each notebook prints its own checks at the end. `extract/extract.py` is the orig
 - Name, sector and industry are maintained by hand, not pulled live.
 - Databricks Free Edition is serverless only and has fair-usage limits.
 - The 20-day moving average is NULL for each stock's first 19 days of data.
+- The dashboard is refreshed by hand in Power BI Desktop (scheduled refresh needs the Power BI service).
 
 ## Tech stack
 
-Python (requests), Databricks Free Edition, PySpark, Spark SQL, Delta Lake (MERGE, schema enforcement), Auto Loader, Unity Catalog (Volumes, views), Databricks Jobs (scheduling, repair runs), Databricks secrets and CLI, Git/GitHub
+Python (requests), Databricks Free Edition, PySpark, Spark SQL, Delta Lake (MERGE, schema enforcement), Auto Loader, Unity Catalog (Volumes, views), Databricks Jobs (scheduling, repair runs), Databricks secrets and CLI, Databricks SQL warehouse, Power BI (Power Query, DAX), Git/GitHub
 
 ## Repository layout
 
@@ -144,6 +162,7 @@ extract/      extract.py (laptop version)
 reference/    companies.csv
 notebooks/    00_extract, 01_bronze, 02_silver, 03_gold_fact, 04_gold_dim
 sql/          v_price_trend.sql
-docs/         job_run.png
+dashboard/    stock_dashboard.pbix
+docs/         job_run.png, dashboard.png
 README.md
 ```
